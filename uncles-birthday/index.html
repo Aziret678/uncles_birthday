@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Туулган күнүңүз менен, Жезде!</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+         :root {
+            /* Палитра */
+            --text-main: #ffffff;
+            --text-secondary: #f0f0f0;
+            --accent-warm: #ffecd2;
+            /* Эффекты стекла */
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            /* Анимации */
+            --transition-speed: 0.3s;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-main);
+            background: linear-gradient(135deg, #fc6076 0%, #ff9a44 100%);
+            /* Fallback фон */
+            min-height: 100vh;
+            /* Используем dvh для корректной работы на мобильных с плавающими барами */
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        /* --- ВИДЕО ФОН --- */
+        
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+        /* Затемнение фона для читаемости */
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            /* Полупрозрачный слой */
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            z-index: -1;
+        }
+        /* --- ЦЕНТРАЛЬНАЯ КАРТОЧКА --- */
+        
+        .glass-card {
+            position: relative;
+            width: 100%;
+            /* Адаптивная ширина: минимум 300px, максимум 560px или 92% ширины экрана */
+            max-width: min(560px, 92vw);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 40px 24px;
+            text-align: center;
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            /* iOS fix */
+            /* Анимация "дыхания" */
+            animation: breathe 10s ease-in-out infinite;
+            transform-origin: center;
+        }
+        /* --- ТИПОГРАФИКА --- */
+        
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
+            line-height: 1.2;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-family: 'Lora', serif;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-style: italic;
+        }
+        /* --- БЛОК ПОЖЕЛАНИЙ --- */
+        
+        .wishes-container {
+            /* Скрыт по умолчанию */
+            display: none;
+            margin-bottom: 30px;
+            min-height: 120px;
+            /* Чтобы карточка не скакала по высоте */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity var(--transition-speed) ease;
+        }
+        
+        .wishes-container.visible {
+            display: flex;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .wish-text {
+            font-family: 'Lora', serif;
+            font-size: clamp(1.1rem, 4.5vw, 1.35rem);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            font-weight: 500;
+            color: var(--accent-warm);
+        }
+        
+        .wish-author {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-top: 8px;
+        }
+        /* --- КНОПКИ --- */
+        
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .btn {
+            appearance: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            width: 100%;
+            max-width: 320px;
+            min-height: 54px;
+            /* Удобно для пальца */
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: transform 0.1s ease, background 0.2s ease, opacity 0.2s;
+        }
+        
+        .btn-primary {
+            background: #ffffff;
+            color: #333;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            /* Скрыта по умолчанию */
+            display: none;
+        }
+        
+        .btn-secondary:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary.visible {
+            display: block;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        /* --- АНИМАЦИИ --- */
+        
+        @keyframes breathe {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.015);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Утилитные классы для JS анимации */
+        
+        .fade-out {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+        
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <video class="video-bg" autoplay muted loop playsinline>
+        <source src="./background/background.mp4" type="video/mp4">
+    </video>
+
+    <div class="overlay"></div>
+
+    <main class="glass-card">
+        <h1>Туулган күнүңүз менен,<br>Жезде!❤️</h1>
+
+        <div class="subtitle">
+            «Ар дайым аман-эсен болуңуз», <br>«Ден соолукта жана бактылуу болуңуз» <br> Бүгүн сиз 53 жашка толдуңуз 🎉
+        </div>
+
+        <div class="wishes-container" id="wishesContainer">
+            <div class="wish-text" id="wishText">...</div>
+            <div class="wish-author" id="wishAuthor">...</div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" id="mainBtn">Каалоо-тилектер</button>
+            <button class="btn btn-secondary" id="switchBtn">Пожелания от Тариэль</button>
+        </div>
+    </main>
+
+    <script>
+        // --- ДАННЫЕ ---
+
+        // Пожелания от Ази (простые строки)
+        const tilekWishes = [
+            "Туулган күнүңүз менен куттуктайм, Жезде, 🎂🎉",
+            "Урматтуу жезде! Туулган күнүңүз кут болсун!, 💪🦾",
+            "Сизге чың ден соолук, узак өмүр,, 👣✨",
+            "Уй-бүлөлүк бакыт жана иштериңизге чоң ийгиликтерди каалайм, 🏔️🏡",
+            "Жүзүңүздөн жылмаюу, жүрөгүңүздөн бейпилдик кетпесин, 😊❤️",
+            "Сиздин эмгегиңиздин үзүрүн көрүңүз, 🌟🌾",
+            "Биз сизди жакшы көрөбүз жана сыйлайбыз. 🤝💖"
+        ];
+
+        // Пожелания от других (объекты с автором)
+        const othersWishes = [{
+            text: "Ата, туулган күнүңүз менен!🎂🎉,",
+            author: "Тариэль"
+        }, {
+            text: "Сиз берген тарбия, акыл-насаат жана колдоо мен үчүн ар дайым баалуу, ❤️🙏",
+            author: "Тариэль"
+        }, {
+            text: "Сизге бекем ден соолук, бактылуу өмүр, ✨🍀",
+            author: "Тариэль"
+        }, {
+            text: "Карыбас кайрат жана үй-бүлөлүк береке каалайм, 💪🛡️",
+            author: "Тариэль"
+        }, {
+            text: "Ар дайым аман-эсен, маанайыңыз ачык болуп, биздин төрүбүздө аман жүрө бериңиз!, ☀️🌈",
+            author: "Тариэль"
+        }, {
+            text: "Биз сизди жакшы көрөбүз. 🤝💖",
+            author: "Тариэль"
+        }, {
+
+        }];
+
+        // --- СОСТОЯНИЕ ПРИЛОЖЕНИЯ ---
+
+        let currentMode = 'tilek'; // 'tilek' или 'others'
+        let isFirstClick = true;
+
+        // Копии массивов для отслеживания просмотренных (чтобы не повторялись сразу)
+        let tilekQueue = [...tilekWishes];
+        let othersQueue = [...othersWishes];
+
+        // --- ЭЛЕМЕНТЫ DOM ---
+
+        const mainBtn = document.getElementById('mainBtn');
+        const switchBtn = document.getElementById('switchBtn');
+        const container = document.getElementById('wishesContainer');
+        const textEl = document.getElementById('wishText');
+        const authorEl = document.getElementById('wishAuthor');
+
+        // --- ЛОГИКА ---
+
+        /**
+         * Получает следующее уникальное пожелание в зависимости от режима.
+         * Если список закончился, перемешивает и начинает заново.
+         */
+        function getNextWish() {
+            let wishObj = {
+                text: "",
+                author: ""
+            };
+
+            if (currentMode === 'tilek') {
+                if (tilekQueue.length === 0) tilekQueue = [...tilekWishes]; // Перезапуск
+
+                // Случайный выбор
+                const index = Math.floor(Math.random() * tilekQueue.length);
+                const text = tilekQueue.splice(index, 1)[0];
+
+                wishObj.text = text;
+                wishObj.author = "— Азирет";
+            } else {
+                if (othersQueue.length === 0) othersQueue = [...othersWishes]; // Перезапуск
+
+                const index = Math.floor(Math.random() * othersQueue.length);
+                const data = othersQueue.splice(index, 1)[0];
+
+                wishObj.text = data.text;
+                wishObj.author = `— ${data.author}`;
+            }
+            return wishObj;
+        }
+
+        /**
+         * Анимированная смена текста
+         */
+        function updateWishUI(wish) {
+            // Сначала fade-out
+            container.style.opacity = '0';
+
+            setTimeout(() => {
+                // Меняем контент
+                textEl.innerText = wish.text;
+                authorEl.innerText = wish.author;
+
+                // Fade-in
+                container.style.opacity = '1';
+            }, 300); // Тайминг должен совпадать с CSS transition
+        }
+
+        // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
+
+        // 1. Нажатие на главную кнопку
+        mainBtn.addEventListener('click', () => {
+            const wish = getNextWish();
+
+            if (isFirstClick) {
+                // Первый запуск: меняем интерфейс
+                isFirstClick = false;
+
+                // Заполняем текст
+                textEl.innerText = wish.text;
+                authorEl.innerText = wish.author;
+
+                // Показываем контейнер
+                container.classList.add('visible');
+
+                // Меняем кнопку
+                mainBtn.innerText = "Следующее пожелание";
+
+                // Показываем вторую кнопку
+                switchBtn.classList.add('visible');
+            } else {
+                // Последующие клики: анимация смены
+                updateWishUI(wish);
+            }
+        });
+
+        // 2. Нажатие на кнопку переключения режима
+        switchBtn.addEventListener('click', () => {
+            // Переключаем режим
+            if (currentMode === 'tilek') {
+                currentMode = 'others';
+                switchBtn.innerText = "Вернуться к пожеланиям Азирета";
+            } else {
+                currentMode = 'tilek';
+                switchBtn.innerText = "Вернуться к пожеланиям Тариэль";
+            }
+
+            // Сразу показываем новое пожелание из новой категории
+            const wish = getNextWish();
+            updateWishUI(wish);
+        });
+    </script>
+</body>
+
+</html>
